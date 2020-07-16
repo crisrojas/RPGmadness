@@ -3,12 +3,12 @@
 //  rpg
 //
 //  Created by Cristian Rojas on 15/07/2020.
-//  Copyright © 2020 Cristian Rojas. All rights reserved.
+//  MIT 
 //
 
 import Foundation
 
-class Character: Equatable {
+class Character {
     var name : String?
     var health : Int  = 20
     var weapon : Weapon = Weapon()
@@ -21,12 +21,30 @@ class Character: Equatable {
         character.receiveDamage(damage: self.weapon.power)
     }
     func receiveDamage(damage: Int) {
-        self.health -= damage
-        if self.health < 0 {
-            self.health = 0
+        health -= damage
+        if health < 0 {
+            health = 0
         }
     }
-    static func ==(firstCharacter: Character, secondCharacter: Character) -> Bool {
+    
+}
+
+
+
+
+class Elf : Character {
+    
+}
+
+
+
+// HELPERS
+
+extension Character: Equatable {
+    static func ==(firstCharacter: Character, secondCharacter: Character) -> Bool { // Put inside extension in the next push
             return firstCharacter.name == secondCharacter.name
     }
+    func isDead() -> Bool {
+          return health <= 0
+      }
 }
