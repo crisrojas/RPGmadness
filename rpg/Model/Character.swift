@@ -10,15 +10,16 @@ import Foundation
 
 class Character {
     var name : String?
-    var health : Int  = 20
+    var health : Int  = 100
     var weapon : Weapon = Weapon()
+    var emoji : String?
     
     func healComrade(character: Character) {
         character.health += 10
     }
     
     func attackEnemy(character: Character) {
-        character.receiveDamage(damage: self.weapon.power)
+        character.receiveDamage(damage: weapon.power)
     }
     func receiveDamage(damage: Int) {
         health -= damage
@@ -26,13 +27,6 @@ class Character {
             health = 0
         }
     }
-    
-}
-
-
-
-
-class Elf : Character {
     
 }
 

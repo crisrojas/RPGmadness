@@ -9,14 +9,15 @@
 import Foundation
 
 class Weapon {
-    var power : Int = 20
-}
-
-// SUBCLASSES
-
-class Sword : Weapon {
+    var power : Int = 40
     
+    static func randomWeapon(character: Character) {
+        let random = Int.random(in: 1..<3)
+        let matchingNumber = 1
+        if random == matchingNumber {
+            character.weapon.power *= Int.random(in: 1..<5)
+            print("\(character.name!) \(game.text.foundWeapon) \(character.weapon.power)")
+            
+        }
+    }
 }
-
-
-

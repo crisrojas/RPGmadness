@@ -10,55 +10,46 @@ import Foundation
 
 class Game {
     var players = [Player(), Player()]
-    var lang = Lang()
+    var text = Text()
+    var numberOfCharacters = 3
     
     func start() {
-        lang.setLang()
+        text.setLang()
         welcome()
-        naming()
+        chooseCharacterNumber() // Uncomment if you want the users to choose the number of characters
+        namingPlayers()
         play()
+        restart()
     }
     
+    func chooseCharacterNumber() {
+        numberOfCharacters = Utilities.waitForInput(message: text.chooseNumberOfCharacters, condition: 1...10)
+    }
    
     func welcome() {
-           print("\(lang.welcome)\n\n")
+           print("\(text.welcome)\n\n")
            print("  /$$$$$$$  /$$$$$$$   /$$$$$$  /$$      /$$                 /$$\n | $$__  $$| $$__  $$ /$$__  $$| $$$    /$$$                | $$\n | $$  \\ $$| $$  \\ $$| $$  \\__/| $$$$  /$$$$  /$$$$$$   /$$$$$$$ /$$$$$$$   /$$$$$$   /$$$$$$$ /$$$$$$$\n | $$$$$$$/| $$$$$$$/| $$ /$$$$| $$ $$/$$ $$ |____  $$ /$$__  $$| $$__  $$ /$$__  $$ /$$_____//$$_____/\n | $$__  $$| $$____/ | $$|_  $$| $$  $$$| $$  /$$$$$$$| $$  | $$| $$  \\ $$| $$$$$$$$|  $$$$$$|  $$$$$$\n | $$  \\ $$| $$      | $$  \\ $$| $$\\  $ | $$ /$$__  $$| $$  | $$| $$  | $$| $$_____/ \\____  $$\\____  $$\n | $$  | $$| $$      |  $$$$$$/| $$ \\/  | $$|  $$$$$$$|  $$$$$$$| $$  | $$|  $$$$$$$ /$$$$$$$//$$$$$$$/\n |__/  |__/|__/       \\______/ |__/     |__/ \\_______/ \\_______/|__/  |__/ \\_______/|_______/|_______/\n\n")
        }
     
-    func naming() {
-        var name: String?
-        var names = [String]()
+    func namingPlayers() {
 
         for i in 0..<players.count {
-           
-            print("\n👤 Player \(i+1), \(game.lang.yourname)")
-            players[i].name = readLine()!
-            print("\n\(players[i].name) \(game.lang.namecharacters)")
+            var name = ""
+            repeat {
+                print("👤 Player \(i+1), \(text.yourname)")
+                name = readLine()!
+                name = name.lowercased()
+                name = name.capitalized
+            } while name.isBlank
             
-            for x in 0..<players[i].characters.count {
-                print("\(game.lang.character) \(x+1):")
-                 name = readLine() // todo: we're using "name" two times which isn't efficient?
-                
-               
-                while name == "" || self.nameExists(names: names, name: name!) {
-                    print("\n\(game.lang.errorNaming)")
-                    print("\(game.lang.character) \(x+1):")
-                    name = readLine()
-                }
-                
-                
-                names.append(name!)
-                players[i].characters[x].name = name
-                
-                
-            }
+            players[i].name = name
+            players[i].createCharacters()
             
         }
-
     }
     
     func play() {
-        while players[0].teamIsDead() == false && players[1].teamIsDead() == false{
+        while players[0].teamIsDead() == false && players[1].teamIsDead() == false { //todo: abstraer lógica
                 players[0].move(against: players[1])
                 players[0].count += 1
                 if players[1].teamIsDead() == false {
@@ -70,29 +61,37 @@ class Game {
         for player in players {
             if player.teamHealth > 0 {
                 print("🔥🔥🔥🔥🔥")
-                print("\(player.name) \(lang.won) 💪!\n")
+                print("\(player.name) \(text.won) 💪!")
+                print("\(player.team.count) left character out of \(game.numberOfCharacters): ") //todo: translate "left character out of"
+                for character in player.team {
+                    print("\(character.name!) 💉: \(character.health) + 💪: \(character.weapon.power)")
+                }
                 
             }
-            print("\(player.name) made \(player.count) movements")
+            print("\(player.name) made \(player.count) movements") // "todo: translate"
             
         }
             
+    }
+    func restart() {
+        var choice = ""
+        repeat {
+            print("Restart y/n")
+            choice = readLine()!
+        } while choice != "y" && choice != "n" // || y es diferente a "y" Y diferente a "n" (es decir, diferente a ambos) ? no. y es diferente a "y" O "diferente a "n" ?
+        
+        if choice == "y" {
+            welcome()
+            chooseCharacterNumber() // Uncomment if you want the users to choose the number of characters
+            namingPlayers()
+            play()
+            restart()
+        } else {
+            return
+        }
     }
     
    
     
    
 }
-
-// HELPERS
-
-extension Game {
-    func nameExists(names: [String], name: String) -> Bool {
-           var exists = false
-           if names.firstIndex(of: name) != nil {
-               exists = true
-           }
-           return exists
-       }
-}
-
