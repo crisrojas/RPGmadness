@@ -9,36 +9,50 @@
 import Foundation
 
 class Character {
-    var name : String?
-    var health : Int  = 100
-    var weapon : Weapon = Weapon()
-    var emoji : String?
     
-    func healComrade(character: Character) {
-        character.health += 10
+    /// Defines the character's name as an empty string. It will be defined later on
+    var name : String = ""
+    /// Defines the health of the Character
+    var health : Int
+    /// Creates a weapon for the character
+    var weapon : Weapon
+    /// Defines the emoji of the character
+    var emoji : String
+    /// Defines the healing power
+    var healingPower : Int
+    
+    
+    init(health: Int, weapon: Weapon, emoji: String, healingPower: Int) {
+        
+        self.health = health
+        self.weapon = weapon
+        self.emoji = emoji
+        self.healingPower = healingPower
+        
     }
     
-    func attackEnemy(character: Character) {
-        character.receiveDamage(damage: weapon.power)
-    }
+    convenience init() { self.init(health: 100, weapon: Weapon(), emoji: "👤", healingPower: 10) }
+    
+    /// Heal a team member
+    func healComrade(character: Character) { character.health += healingPower }
+    /// Attack a member of the other team
+    func attackEnemy(character: Character) { character.receiveDamage(damage: weapon.power) }
+    
+    /// Receive's damage if attacked by the enemy
     func receiveDamage(damage: Int) {
         health -= damage
-        if health < 0 {
-            health = 0
-        }
+        health = health < 0 ? 0 : health
     }
     
 }
 
-
-
-// HELPERS
+// PROTOCOLS AND HELPERS
 
 extension Character: Equatable {
-    static func ==(firstCharacter: Character, secondCharacter: Character) -> Bool { // Put inside extension in the next push
-            return firstCharacter.name == secondCharacter.name
+    /// Allows to distinguish characters
+    static func ==(firstCharacter: Character, secondCharacter: Character) -> Bool {
+        return firstCharacter.name == secondCharacter.name
     }
-    func isDead() -> Bool {
-          return health <= 0
-      }
+    /// Checks if a character is dead
+    func isDead() -> Bool { return health <= 0 }
 }

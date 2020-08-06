@@ -9,10 +9,8 @@
 import Foundation
 
 class Magician : Character {
-    override init() {
-           super.init()
-           health = 20 // 85
-           weapon = Wand()
-           emoji = "🧙🏻‍♂️"
+    
+    init() {
+        super.init(health: 60, weapon: Wand(), emoji: "🧙🏻‍♂️", healingPower: 35)
     }
 }

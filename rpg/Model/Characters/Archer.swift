@@ -9,10 +9,8 @@
 import Foundation
 
 class Archer : Character {
-    override init() {
-           super.init()
-           health = 20 // 100
-           weapon = Arc()
-           emoji = "🏹"
+    
+    init() {
+        super.init(health: 100, weapon: Arc(), emoji: "🏹", healingPower: 15)
     }
 }

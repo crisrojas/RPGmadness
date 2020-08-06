@@ -6,10 +6,11 @@
 //  MIT
 //
 
-
+/// Declares all the strings we're going to print to the user in the game
 struct Text {
+    
     var welcome = "\n\nWelcome to RPG madness"
-    var yourname = "what's your name?"
+    var chooseYourName = "what's your name?"
     var nameCharacter = "Name the character"
     var nameConstraints = "Name can't be empty nor taken"
     var chooseKind = "Choose the kind of the character"
@@ -29,22 +30,24 @@ struct Text {
     var archer = "Archer"
     var foundWeapon = "has found a weapon. Power: "
     var turn = "Turn:"
+    var enterNumber = "Enter number"
+    var leftoutof = "left characters out of"
+    var movements = "movements"
     
-    mutating func setLang() { /* mettre choix dans la classe game*/ /* mutating me laisse changer les propriétés d'un struct*/
-        var inputTxt = ""
-        repeat {
-            print("\n\n\n1. 🥖 Français")
-            print("2. 💃🏻 Español")
-            print("3. 🏈 English")
-            inputTxt = readLine()!
-        } while inputTxt != "1" && inputTxt != "2" && inputTxt != "3"
-
-        guard let language = Int(inputTxt) else {return} // Eviter d'utiliser des points d'exclamation car induit des problèmes
-
-        switch language {
+    /// Allows user to choose the game language. Declared as a mutating function because the strings are stored in a struct
+    mutating func setLang() {
+        
+        let languages = "\n\n\n1. 🥖 Français"
+        + "\n2. 💃🏻 Español"
+        + "\n3. 🏈 English"
+        
+        let choice = Utilities.waitForInput(message: languages, condition: 1...3)
+        
+        /// Changes the languege of the game strings to the choosen one
+        switch choice {
         case 1:
             welcome = "\n\nBienvenu à RPGmadness"
-            yourname = "quel est ton prenom?"
+            chooseYourName = "quel est ton prenom?"
             nameCharacter = "Donne un nom au personnage"
             nameConstraints = "Le nom ne peut pas être vide ni repété"
             chooseKind = "Chossi la classe du personage"
@@ -64,9 +67,13 @@ struct Text {
             archer = "Archer"
             foundWeapon = "a trouvé une arme. Pouvoir de l'arme:"
             turn = "Tour:"
+            enterNumber = "Rentrez un numéro"
+            leftoutof = "personnages restent sur"
+            movements = "mouvements"
+            
         case 2:
             welcome = "\n\nBienvenido a RPGmadness"
-            yourname = "cuál es tu nombre?"
+            chooseYourName = "cuál es tu nombre?"
             nameCharacter = "Da un nombre al personaje"
             nameConstraints = "El nombre no puede estar vacío ni repetido"
             chooseKind = "Elije la clase del personaje"
@@ -86,6 +93,10 @@ struct Text {
             archer = "Arquero"
             foundWeapon = "ha encontrado un arma. Poder del arma:"
             turn = "Turno:"
+            enterNumber = "Escribe el número"
+            leftoutof = "personajes de"
+            movements = "movimientos"
+            
         case 3:
             return
         default:

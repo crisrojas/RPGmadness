@@ -9,11 +9,13 @@
 import Foundation
 
 class Player {
+    /// Player's name. Declared empty becasue we well use game.namingPlayers()
     var name = ""
+    /// Array that contains the members of the team
     var team = [Character]()
-    // The count variable will be updated every time player makes a move. It will be used in the statistics at the end of the game
+    /// Creates a count variable we'll update with every move of the player
     var count = Int()
-    
+    /// Returns the total health of the team.
     var teamHealth : Int {
         var total : Int = Int()
         for character in team {
@@ -22,44 +24,39 @@ class Player {
         return total
     }
     
+    /// Checks if all the team members are dead
     func teamIsDead() -> Bool {
         return teamHealth == 0
     }
-    
+    /// Creates the caracter's inside the player.team array
     func createCharacters() {
-        var input = ""
-        var characterName = ""
-        var character = Character()
-        var names = [String]()
         
+        // Creates characters and appends them to the array "team"
         while team.count < game.numberOfCharacters {
-            repeat {
-                print("\n\n\(name), \(game.text.chooseKind) \(team.count + 1)"
-                    + "\n1. 🗡 \(game.text.knight). 💉: 110. 💪: 50."
-                    + "\n2. 🏹 \(game.text.archer). 💉: 100. 💪: 60"
-                    + "\n3. 🧙🏻‍♂️ \(game.text.magician). 💉: 70. 💪: 70\n")
-                input = readLine()!
-            } while input != "1" && input != "2" && input != "3"
+            let message = "\n\n\(name), \(game.text.chooseKind) \(team.count + 1)\n"
+                + "\n1.\n🗡 \(game.text.knight)\n💉: 130. 💪: 35. 👨‍⚕️: 10"
+                + "\n2.\n🏹 \(game.text.archer)\n💉: 100. 💪: 60. 👨‍⚕️: 15"
+                + "\n3.\n🧙🏻‍♂️ \(game.text.magician)\n💉: 60. 💪: 75. 👨‍⚕️: 35"
+            let input = Utilities.waitForInput(message: message, condition: 1...3)
             
+            var character = Character()
             switch input {
-            case "1":
+            case 1:
                 character = Knight()
-            case "2":
+            case 2:
                 character = Archer()
-            case "3":
+            case 3:
                 character = Magician()
             default:
                 break
             }
             
+            var characterName = ""
+            var names = [String]()
             repeat {
                 print("\(game.text.nameCharacter) \(team.count + 1). \(game.text.nameConstraints)")
-                characterName = readLine()!
-                characterName = characterName.lowercased()
-                characterName = characterName.capitalized
-            } while characterName.isBlank || nameExists(names: names, name: characterName)
-            
-            
+                characterName = readLine()!.normalize()
+            } while characterName.isBlank || Utilities.nameExists(names: names, name: characterName)
             
             print(characterName)
             character.name = characterName
@@ -69,82 +66,65 @@ class Player {
         
     }
     
+    /// Allows user to attack or to heal a team member
     func move(against player: Player) {
-        var inputStr = String()
-        var action = Int()
+        let message = "\n\n\(game.text.turn) \(name)"
+            + "\n1.⚔️ \(game.text.attack)"
+            + "\n2.💉 \(game.text.heal)\n"
         
-        repeat {
-            print("\n\(game.text.turn) \(name)")
-            print("1.⚔️ \(game.text.attack)")
-            print("2.💉 \(game.text.heal)\n")
-            inputStr = readLine()!
-        } while inputStr != "1" && inputStr != "2"
-        action = Int(inputStr)!
-        
-        if action == 1 {
-            attack(against: player)
-        } else {
-            heal()
-        }
+        let action = Utilities.waitForInput(message: message, condition: 1...2)
+        action == 1 ? attack(against: player) : heal()
         
     }
-    
+    /// Allows user to chose the team member that's going to attack and the enemy that will be attacked
     func attack(against player: Player) {
-        //print(game.text.whoAttacks)
-        rangeThrougPlayers(player: self)
-        let attackerIndex = Utilities.waitForInput(message: game.text.whoAttacks, condition: 1...team.count) - 1
+        
+        let range = self.rangeTeam()
+        let attackerIndex = Utilities.waitForInput(message: game.text.whoAttacks + range, condition: 1...team.count) - 1
         let attacker = team[attackerIndex]
         
         Weapon.randomWeapon(character: attacker)
         
-        //print(game.text.whoIsAttacked)
-        rangeThrougPlayers(player: player)
-        let enemyIndex = Utilities.waitForInput(message: game.text.whoIsAttacked, condition: 1...player.team.count) - 1
+        
+        let rangeEnemy = player.rangeTeam()
+        let enemyIndex = Utilities.waitForInput(message: game.text.whoIsAttacked + rangeEnemy, condition: 1...player.team.count) - 1
         let enemy = player.team[enemyIndex]
         
         attacker.attackEnemy(character: enemy)
-        
+                
         if enemy.isDead() {
-            print("\(enemy.name!) \(game.text.isDead) \n")
+            
+            print("\(enemy.name) \(game.text.isDead) \n")
             let characterIndex = player.team.firstIndex(of: enemy)
             player.team.remove(at: characterIndex!)
             
-        } else {
-            print("\(enemy.name!) \(game.text.healthIs) \(enemy.health)")
-        }
+        } else { print("\(enemy.name) \(game.text.healthIs) \(enemy.health)") }
     }
     
+    /// Allows user to increase one of his members health
     func heal() {
-       // print(game.text.whoHeals)
-        rangeThrougPlayers(player: self)
-        let healerIndex = Utilities.waitForInput(message: game.text.whoHeals, condition: 1...team.count) - 1
-        let healer = team[healerIndex]
         
-        //print(game.text.whoIsHealed)
-        rangeThrougPlayers(player: self)
-        let comradeIndex = Utilities.waitForInput(message: game.text.whoIsHealed, condition: 1...team.count) - 1
+        let range = self.rangeTeam()
+        
+        let healerIndex = Utilities.waitForInput(message: game.text.whoHeals + range, condition: 1...team.count) - 1
+        let healer = team[healerIndex]
+                
+        let comradeIndex = Utilities.waitForInput(message: game.text.whoIsHealed + range, condition: 1...team.count) - 1
         let comrade = team[comradeIndex]
         
         healer.healComrade(character: comrade)
-        print("\(comrade.name!) \(game.text.healthIs) \(comrade.health)")
+        print("\(comrade.name) \(game.text.healthIs) \(comrade.health)")
     }
     
-    func rangeThrougPlayers(player: Player) {
-        for i in 0..<player.team.count {
-            print("\(i+1). \(player.team[i].emoji!) \(player.team[i].name!). 💉: \(player.team[i].health). 💪: \(player.team[i].weapon.power)")
+    /// Returns a string with information (name, health, power...) about all the members of the team
+    func rangeTeam() -> String {
+        
+        var range = ""
+        for i in 0..<self.team.count {
+            let teamInfo = "\n\(i+1). \(team[i].emoji) \(team[i].name). 💉: \(team[i].health). 💪: \(team[i].weapon.power). 👨‍⚕️ \(team[i].healingPower)"
+            range.append(teamInfo)
         }
+        return range
     }
     
-}
-
-
-
-extension Player {
-    func nameExists(names: [String], name: String) -> Bool {
-        var exists = false
-        if names.firstIndex(of: name) != nil {
-            exists = true
-        }
-        return exists
-    }
 }

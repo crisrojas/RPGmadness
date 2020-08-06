@@ -9,10 +9,8 @@
 import Foundation
 
 class Knight : Character {
-    override init() {
-           super.init()
-           health = 20 //110
-           weapon = Sword()
-           emoji = "⚔️"
+    
+    init() {
+        super.init(health: 130, weapon: Sword(), emoji: "🗡", healingPower: 10)
     }
 }
